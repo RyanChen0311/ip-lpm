@@ -8,6 +8,7 @@
 #   make clean      Remove build artefacts
 #   make docs       Generate Doxygen HTML documentation
 #   make test       Run the smoke test script
+#   make bench      Run the reproducible throughput benchmark (no external data)
 #
 # Usage after build:
 #   ./iplookup rrc04 20211122
@@ -82,6 +83,10 @@ docs:
 .PHONY: test
 test:
 	@bash scripts/smoke_test.sh
+
+.PHONY: bench
+bench: all
+	@bash scripts/benchmark.sh
 
 # ===========================================================================
 # Dependency tracking (auto-generated .d files)

@@ -2,7 +2,7 @@
 
 > A high-performance IPv4 routing engine implemented in C, using a **32-level Binary Trie** to perform **Longest Prefix Match (LPM)** — the same algorithm used inside real-world routers and network ASICs.
 
-![CI](https://github.com/RyanChen0311/ip-lpm/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/RyanChen0311/ip-lpm/actions/workflows/ci.yml/badge.svg)](https://github.com/RyanChen0311/ip-lpm/actions/workflows/ci.yml)
 
 ---
 
@@ -258,7 +258,7 @@ Each line is the CIDR prefix of the longest-matching route:
 | `LPM lookup (all trace)` | Time to resolve all trace destinations — the core benchmark |
 | `default-route fallbacks` | Destinations with no matching prefix; fell back to `0.0.0.0/0` |
 
-With a real BGP table (~1.1M prefixes, 100K lookups), typical results on a modern machine:
+With a real BGP table (~1.1M prefixes, 100K lookups), representative results on a modern x86-64 Linux machine (Intel Core i7, 16 GB RAM):
 
 | Metric | Value |
 |--------|-------|
@@ -266,6 +266,14 @@ With a real BGP table (~1.1M prefixes, 100K lookups), typical results on a moder
 | LPM lookup time | ~0.023 s for 100,000 queries |
 | Throughput | ~4,300,000 lookups / second |
 | Default-route fallbacks | < 5 (near-complete internet coverage) |
+
+To reproduce these numbers on your own machine without downloading BGP data, run:
+
+```bash
+make bench
+```
+
+`scripts/benchmark.sh` generates 100,000 synthetic prefixes and 100,000 trace IPs locally, then reports measured throughput.
 
 ---
 
@@ -330,7 +338,9 @@ A red badge means the most recent push failed to compile or failed a test.
 
 ## Background
 
-This project was developed as coursework exploring how **IP routing lookups** work at the algorithm level, motivated by the observation that hardware routers (Cisco, Juniper) implement essentially the same binary-trie structure in silicon.  Validated against a real BGP snapshot of 1,127,835 prefixes from RIPE NCC RIS rrc00.
+Motivated by the observation that hardware routers (Cisco, Juniper) implement binary-trie structures in silicon, this project builds the same algorithm in software — implementing full Longest Prefix Match from scratch in C and validating the results against a real BGP snapshot of 1,127,835 prefixes from RIPE NCC RIS.
+
+The design prioritises transparent performance measurement: each pipeline stage is timed independently, making bottlenecks immediately visible without a profiler.
 
 ---
 
